@@ -59,7 +59,7 @@ function SWEP:FakeDeath(ply)
     CORPSE.SetCredits(rag, 0)
 
     local dmgtype = self:GetDMGType()
-	rag.was_role = self.CurrentRole[1]
+    rag.was_role = self.CurrentRole[1]
     rag.dmgtype = dmgtype -- Add our Damage Type.
     rag.was_headshot = dmgtype == DMG_BULLET -- Bullet Damage is always a headshot.
     rag.dmgwep = dmgtype == DMG_BULLET and GetRandomWeapon() or "" -- Give it a random weapon if needed
