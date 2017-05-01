@@ -1,21 +1,30 @@
-SWEP.Base                = "weapon_tttbase"
+SWEP.Base               	= "weapon_tttbase"
 
-SWEP.PrintName           = "Death Faker"
-SWEP.Slot                = 6
+SWEP.PrintName           	= "Death Faker"
+SWEP.Slot                	= 6
 
-SWEP.Primary.ClipSize    = -1
-SWEP.Primary.DefaultClip = -1
-SWEP.Primary.Automatic   = true
-SWEP.Primary.Ammo        = "none"
-SWEP.Primary.Delay       = 10
+SWEP.Primary.ClipSize    	= -1
+SWEP.Primary.DefaultClip 	= -1
+SWEP.Primary.Automatic   	= true
+SWEP.Primary.Ammo        	= "none"
+SWEP.Primary.Delay       	= 10
 
-SWEP.HoldType            = "slam"
-SWEP.ViewModel           = "models/weapons/cstrike/c_c4.mdl"
-SWEP.WorldModel          = "models/weapons/w_c4.mdl"
+SWEP.Secondary.Delay 		= 1
+SWEP.NextRoleChange 		= 1
 
-SWEP.Kind                = WEAPON_EQUIP1
-SWEP.CanBuy              = {ROLE_TRAITOR}
-SWEP.LimitedStock        = true
+SWEP.HoldType            	= "slam"
+SWEP.ViewModel          	= "models/weapons/cstrike/c_c4.mdl"
+SWEP.WorldModel          	= "models/weapons/w_c4.mdl"
+
+SWEP.Kind               	= WEAPON_EQUIP1
+SWEP.CanBuy              	= {ROLE_TRAITOR}
+SWEP.LimitedStock        	= true
+
+SWEP.CurrentRole			= {ROLE_TRAITOR, "Traitor", Color(250, 20, 20)}
+SWEP.Roles					= {
+	{ROLE_INNOCENT, "Innocent", Color(20, 250, 20)}, 
+	{ROLE_TRAITOR, "Traitor", Color(250, 20, 20)}
+}
 
 -- Networking some stuff
 function SWEP:SetupDataTables()
@@ -38,8 +47,14 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
-    self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
-    self:BodyDrop()
+    if CurTime() < self.NextRoleChange then return end
+	self.NextRoleChange = CurTime() + self.Secondary.Delay
+	
+	self.CurrentRole = table.FindNext(self.Roles, self.CurrentRole)
+	
+	if CLIENT then
+		chat.AddText(Color(200, 20, 20), "[Death Faker] ", Color(250, 250, 250), "Your body's role will be ", self.CurrentRole[3], self.CurrentRole[2])
+	end
 end
 
 local throwsound = Sound("physics/body/body_medium_impact_soft2.wav")
