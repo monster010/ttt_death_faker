@@ -1,3 +1,5 @@
+local editrole = CreateConVar("df_editrole", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+
 SWEP.Base                   = "weapon_tttbase"
 
 SWEP.PrintName              = "Death Faker"
@@ -47,10 +49,16 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
+    if not editrole:GetBool() then return end
+    
     if CurTime() < self.NextRoleChange then return end
     self.NextRoleChange = CurTime() + self.Secondary.Delay
 
-    self.CurrentRole = table.FindNext(self.Roles, self.CurrentRole)
+    if self.CurrentRole[1] == ROLE_TRAITOR then
+        self.CurrentRole = self.Roles[1]
+    elseif self.CurrentRole[1] == ROLE_INNOCENT then
+        self.CurrentRole = self.Roles[2]
+    end
 
     if CLIENT then
         chat.AddText(Color(200, 20, 20), "[Death Faker] ", Color(250, 250, 250), "Your body's role will be ", self.CurrentRole[3], LANG.GetTranslation(self.CurrentRole[2]))
